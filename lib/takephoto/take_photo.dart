@@ -64,19 +64,19 @@ class _TakePhotoPageState extends State<TakePhotoPage> {
               ),
             const Spacer(),
             ElevatedButton(
-              onPressed: _isInitialized
-                  ? () async {
-                try {
-                  final file = await _controller.takePicture();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Saved to ${file.path}')),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: \$e')),
-                  );
-                }
-              }
+              onPressed:
+              _isInitialized ? () async {
+                        try {
+                          final file = await _controller.takePicture();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Saved to ${file.path}')),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: \$e')),
+                          );
+                        }
+                  }
                   : null,
               child: const Text('CAPTURE'),
             ),
