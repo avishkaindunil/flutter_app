@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/home/home_screen.dart';
+import 'package:camera/camera.dart';
+import 'home/home_screen.dart';
 
-void main() {
+List<CameraDescription> cameras = [];
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras();
   runApp(const MyApp());
 }
 
@@ -17,9 +22,7 @@ class _MyAppState extends State<MyApp> {
 
   void _toggleTheme() {
     setState(() {
-      _themeMode = _themeMode == ThemeMode.dark
-          ? ThemeMode.light
-          : ThemeMode.dark;
+      _themeMode = _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
     });
   }
 
@@ -27,7 +30,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Calculator & Converter',
+      title: 'Calculator & Converter & Camera',
       themeMode: _themeMode,
       theme: ThemeData.light().copyWith(
         colorScheme: ColorScheme.fromSeed(
@@ -44,6 +47,7 @@ class _MyAppState extends State<MyApp> {
       home: HomeScreen(
         isDarkMode: _themeMode == ThemeMode.dark,
         onToggleTheme: _toggleTheme,
+        cameras: cameras,
       ),
     );
   }

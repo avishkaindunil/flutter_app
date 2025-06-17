@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'home_grid.dart';
 import '../calculator/calculator_page.dart';
 import '../converter/currency_converter_page.dart';
+import '../takephoto/take_photo.dart';
+import 'package:camera/camera.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onToggleTheme;
+  final List<CameraDescription> cameras;
 
   const HomeScreen({
     Key? key,
     required this.isDarkMode,
     required this.onToggleTheme,
+    required this.cameras,
   }) : super(key: key);
 
   @override
@@ -19,10 +23,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  final List<Widget> _pages = [
+
+  List<Widget> get _pages => [
     const HomeGrid(),
     const CalculatorPage(),
     const CurrencyConverterPage(),
+    TakePhotoPage(cameras: widget.cameras),
   ];
 
   void _onSelect(int index) => setState(() => _currentIndex = index);
@@ -51,7 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _currentIndex,
         children: _pages.map((page) {
           if (page is HomeGrid) {
-            return HomeGrid(onTapCalculator: () => _onSelect(1));
+            return HomeGrid(
+              onTapCalculator: () => _onSelect(1),
+              onTapConverter: () => _onSelect(2),
+              onTapTakePhoto: () => _onSelect(3),
+            );
           }
           return page;
         }).toList(),

@@ -12,6 +12,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   String _expression = '';
   String _display = '0';
   bool _shouldClear = false;
+
   static const List<String> _buttons = [
     'C', '+/-', '%', '÷',
     '7', '8', '9', '×',
@@ -95,14 +96,18 @@ class _CalculatorPageState extends State<CalculatorPage> {
           TabBar(
             labelColor: Colors.orange,
             unselectedLabelColor: Theme.of(context).textTheme.bodySmall!.color,
-            tabs: const [Tab(text: 'Normal'), Tab(text: 'Scientific'), Tab(text: 'Programming')],
+            tabs: const [
+              Tab(text: 'Normal'),
+              Tab(text: 'Scientific'),
+              Tab(text: 'Programming'),
+            ],
           ),
           Expanded(
             child: TabBarView(
               children: [
                 _buildNormalMode(context),
-                Center(child: Text('Scientific mode pending', style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color))),
-                Center(child: Text('Programming mode pending', style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color))),
+                Center(child: Text('', style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color))),
+                Center(child: Text('', style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color))),
               ],
             ),
           ),
@@ -112,32 +117,73 @@ class _CalculatorPageState extends State<CalculatorPage> {
   }
 
   Widget _buildNormalMode(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          flex: 2,
-          child: Container(
-            alignment: Alignment.bottomRight,
-            padding: const EdgeInsets.all(24),
-            child: Text('$_expression$_display', style: TextStyle(fontSize: 48, color: Theme.of(context).textTheme.bodyLarge!.color)),
-          ),
-        ),
-        Expanded(
-          flex: 5,
-          child: GridView.builder(
-            padding: const EdgeInsets.all(12),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, crossAxisSpacing: 12, mainAxisSpacing: 12),
-            itemCount: _buttons.length,
-            itemBuilder: (_, i) {
-              final lbl = _buttons[i]; if (lbl.isEmpty) return const SizedBox.shrink();
-              final isOp = ['÷','×','-','+','=','%','+/-'].contains(lbl);
-              final bg = isOp ? Colors.orange : (Theme.of(context).brightness == Brightness.dark ? Colors.grey[800]! : Colors.grey[300]!);
-              final fg = isOp ? Colors.white : (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black);
-              return CalculatorButton(label: lbl, color: bg, textColor: fg, onTap: () => _onButtonPressed(lbl));
-            },
-          ),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final height = constraints.maxHeight;
+        const double spacing = 12;
+        const double padding = 12;
+        // Calculate available grid height based on flex ratio
+        const int rows = 5;
+        final gridHeight = constraints.maxHeight * 5 / (2 + 5); // grid takes flex 5 of total flex 7
+        final cellWidth = (width - (spacing * 3) - (padding * 2)) / 4;
+        final cellHeight = (gridHeight - (spacing * (rows - 1)) - (padding * 2)) / rows;
+        final childAspectRatio = cellWidth / cellHeight;
+
+        return Column(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Container(
+                alignment: Alignment.bottomRight,
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  '$_expression$_display',
+                  style: TextStyle(
+                    fontSize: 48,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 5,
+              child: GridView.builder(
+                padding: const EdgeInsets.all(padding),
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: spacing,
+                  mainAxisSpacing: spacing,
+                  childAspectRatio: childAspectRatio,
+                ),
+                itemCount: _buttons.length,
+                itemBuilder: (_, i) {
+                  final lbl = _buttons[i];
+                  if (lbl.isEmpty) return const SizedBox.shrink();
+                  final isOp = ['÷', '×', '-', '+', '=', '%', '+/-'].contains(lbl);
+                  final bg = isOp
+                      ? Colors.orange
+                      : Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]!
+                      : Colors.grey[300]!;
+                  final fg = isOp
+                      ? Colors.white
+                      : Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black;
+                  return CalculatorButton(
+                    label: lbl,
+                    color: bg,
+                    textColor: fg,
+                    onTap: () => _onButtonPressed(lbl),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

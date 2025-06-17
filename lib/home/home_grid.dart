@@ -3,8 +3,15 @@ import '../common/glass_card.dart';
 
 class HomeGrid extends StatelessWidget {
   final VoidCallback? onTapCalculator;
+  final VoidCallback? onTapConverter;
+  final VoidCallback? onTapTakePhoto;
 
-  const HomeGrid({Key? key, this.onTapCalculator}) : super(key: key);
+  const HomeGrid({
+    Key? key,
+    this.onTapCalculator,
+    this.onTapConverter,
+    this.onTapTakePhoto,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +34,15 @@ class HomeGrid extends StatelessWidget {
           textColor: textColor,
         ),
         GlassCard(
-          label: 'Currency Converter',
-          onTap: () {},
+          label: 'Currency Con.',
+          onTap: onTapConverter ?? () {},
+          bgColor: bgColor,
+          borderColor: borderColor,
+          textColor: textColor,
+        ),
+        GlassCard(
+          label: 'Take a Photo',
+          onTap: onTapTakePhoto ?? () {},
           bgColor: bgColor,
           borderColor: borderColor,
           textColor: textColor,
